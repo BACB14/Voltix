@@ -230,25 +230,25 @@ export class GameScene extends Phaser.Scene {
         };
 
         const makeBtn = (x, y, label, color, onDown, onUp) => {
-            const bg = this.add.circle(x, y, 28, color, 0.16)
-                .setStrokeStyle(2, color, 0.55)
+            const bg = this.add.circle(x, y, 34, color, 0.18)
+                .setStrokeStyle(2, color, 0.65)
                 .setScrollFactor(0)
                 .setDepth(100)
                 .setInteractive();
 
             this.add.text(x, y, label, {
-                fontSize: '20px',
+                fontSize: '22px',
                 fontFamily: 'monospace',
                 fontStyle: 'bold',
                 color: '#ffffff'
-            }).setOrigin(0.5).setAlpha(0.75).setScrollFactor(0).setDepth(101);
+            }).setOrigin(0.5).setAlpha(0.8).setScrollFactor(0).setDepth(101);
 
             bg.on('pointerdown', () => {
-                bg.setFillStyle(color, 0.4);
+                bg.setFillStyle(color, 0.45);
                 onDown();
             });
             const release = () => {
-                bg.setFillStyle(color, 0.16);
+                bg.setFillStyle(color, 0.18);
                 if (onUp) onUp();
             };
             bg.on('pointerup', release);
@@ -256,20 +256,20 @@ export class GameScene extends Phaser.Scene {
         };
 
         // Izquierda / Derecha (abajo a la izquierda)
-        makeBtn(52, 535, '◀', 0x3b82f6,
+        makeBtn(58, 532, '◀', 0x3b82f6,
             () => { this.touchState.left = true; },
             () => { this.touchState.left = false; }
         );
-        makeBtn(122, 535, '▶', 0x3b82f6,
+        makeBtn(138, 532, '▶', 0x3b82f6,
             () => { this.touchState.right = true; },
             () => { this.touchState.right = false; }
         );
 
         // Dash / Saltar (abajo a la derecha)
-        makeBtn(678, 535, '⚡', 0x00ff99,
+        makeBtn(662, 532, '⚡', 0x00ff99,
             () => { this.touchState.dashJustPressed = true; }
         );
-        makeBtn(748, 535, '▲', 0x00f0ff,
+        makeBtn(742, 532, '▲', 0x00f0ff,
             () => { this.touchState.jumpJustPressed = true; }
         );
     }
