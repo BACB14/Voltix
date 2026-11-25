@@ -10,11 +10,11 @@ export const LEVELS = [
         goal: { x: 140, y: 112 },
         platforms: [
             { x: 400, y: 588, scaleX: 6.5 }, // Suelo principal
-            { x: 140, y: 480, scaleX: 1.2 },
-            { x: 400, y: 420, scaleX: 1.6 },
-            { x: 650, y: 360, scaleX: 1.2 },
-            { x: 400, y: 270, scaleX: 1.3 },
-            { x: 140, y: 165, scaleX: 1.2 }
+            { x: 140, y: 475, scaleX: 1.35 },
+            { x: 400, y: 410, scaleX: 1.75 },
+            { x: 650, y: 345, scaleX: 1.35 },
+            { x: 400, y: 260, scaleX: 1.45 },
+            { x: 140, y: 165, scaleX: 1.35 }
         ],
         batteries: [
             { x: 140, y: 435 },
@@ -39,14 +39,14 @@ export const LEVELS = [
         goal: { x: 700, y: 112 },
         platforms: [
             { x: 400, y: 588, scaleX: 6.5 },
-            { x: 120, y: 485, scaleX: 1.1 },
-            { x: 350, y: 430, scaleX: 1.3 },
-            { x: 630, y: 470, scaleX: 1.2 },
-            { x: 640, y: 330, scaleX: 1.2 },
-            { x: 380, y: 270, scaleX: 1.4 },
-            { x: 150, y: 210, scaleX: 1.1 },
-            { x: 420, y: 160, scaleX: 1.1 },
-            { x: 700, y: 165, scaleX: 1.1 }
+            { x: 120, y: 480, scaleX: 1.25 },
+            { x: 350, y: 425, scaleX: 1.45 },
+            { x: 630, y: 465, scaleX: 1.35 },
+            { x: 640, y: 325, scaleX: 1.35 },
+            { x: 380, y: 265, scaleX: 1.5 },
+            { x: 150, y: 205, scaleX: 1.25 },
+            { x: 420, y: 160, scaleX: 1.25 },
+            { x: 700, y: 165, scaleX: 1.25 }
         ],
         batteries: [
             { x: 120, y: 440 },
@@ -77,15 +77,15 @@ export const LEVELS = [
         goal: { x: 400, y: 92 },
         platforms: [
             { x: 400, y: 588, scaleX: 6.5 },
-            { x: 140, y: 490, scaleX: 1.1 },
-            { x: 660, y: 490, scaleX: 1.1 },
-            { x: 400, y: 410, scaleX: 1.4 },
-            { x: 150, y: 330, scaleX: 1.2 },
-            { x: 650, y: 330, scaleX: 1.2 },
-            { x: 400, y: 245, scaleX: 1.5 },
-            { x: 160, y: 165, scaleX: 1.0 },
-            { x: 640, y: 165, scaleX: 1.0 },
-            { x: 400, y: 145, scaleX: 1.0 }
+            { x: 140, y: 485, scaleX: 1.25 },
+            { x: 660, y: 485, scaleX: 1.25 },
+            { x: 400, y: 405, scaleX: 1.55 },
+            { x: 150, y: 325, scaleX: 1.35 },
+            { x: 650, y: 325, scaleX: 1.35 },
+            { x: 400, y: 240, scaleX: 1.6 },
+            { x: 160, y: 165, scaleX: 1.2 },
+            { x: 640, y: 165, scaleX: 1.2 },
+            { x: 400, y: 145, scaleX: 1.2 }
         ],
         batteries: [
             { x: 140, y: 445 },
@@ -122,15 +122,15 @@ export const LEVELS = [
         goal: { x: 720, y: 100 },
         platforms: [
             { x: 400, y: 588, scaleX: 6.5 },
-            { x: 140, y: 495, scaleX: 1.0 },
-            { x: 380, y: 445, scaleX: 1.3 },
-            { x: 640, y: 485, scaleX: 1.1 },
-            { x: 660, y: 350, scaleX: 1.1 },
-            { x: 410, y: 295, scaleX: 1.4 },
-            { x: 150, y: 245, scaleX: 1.1 },
-            { x: 160, y: 140, scaleX: 1.0 },
-            { x: 430, y: 150, scaleX: 1.2 },
-            { x: 720, y: 155, scaleX: 1.0 }
+            { x: 140, y: 490, scaleX: 1.2 },
+            { x: 380, y: 440, scaleX: 1.45 },
+            { x: 640, y: 480, scaleX: 1.25 },
+            { x: 660, y: 345, scaleX: 1.25 },
+            { x: 410, y: 290, scaleX: 1.55 },
+            { x: 150, y: 240, scaleX: 1.25 },
+            { x: 160, y: 140, scaleX: 1.2 },
+            { x: 430, y: 150, scaleX: 1.35 },
+            { x: 720, y: 155, scaleX: 1.2 }
         ],
         batteries: [
             { x: 140, y: 450 },

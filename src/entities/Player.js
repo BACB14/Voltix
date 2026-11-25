@@ -3,15 +3,49 @@ import { sfx } from '../audio/SoundFX.js';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
-        super(scene, x, y, 'player');
+        const useCustomSprite = scene.textures.exists('player_sprite');
+        super(scene, x, y, useCustomSprite ? 'player_sprite' : 'player', 0);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
         this.setCollideWorldBounds(true);
         this.setBounce(0);
         this.body.setGravityY(320);
-        this.body.setSize(22, 32);
-        this.body.setOffset(3, 4);
+
+        this.hasCustomAnims = useCustomSprite;
+        if (useCustomSprite) {
+            this.setDisplaySize(84, 65);
+            this.baseScaleX = this.scaleX;
+            this.baseScaleY = this.scaleY;
+            this.body.setSize(95, 145);
+            this.body.setOffset(70, 32);
+
+            if (!scene.anims.exists('voltix_idle')) {
+                scene.anims.create({
+                    key: 'voltix_idle',
+                    frames: scene.anims.generateFrameNumbers('player_sprite', { start: 0, end: 1 }),
+                    frameRate: 3,
+                    repeat: -1
+                });
+                scene.anims.create({
+                    key: 'voltix_run',
+                    frames: scene.anims.generateFrameNumbers('player_sprite', { start: 2, end: 5 }),
+                    frameRate: 12,
+                    repeat: -1
+                });
+                scene.anims.create({
+                    key: 'voltix_dash',
+                    frames: scene.anims.generateFrameNumbers('player_sprite', { start: 8, end: 9 }),
+                    frameRate: 14,
+                    repeat: -1
+                });
+            }
+        } else {
+            this.baseScaleX = 1;
+            this.baseScaleY = 1;
+            this.body.setSize(22, 32);
+            this.body.setOffset(3, 4);
+        }
 
         this.moveSpeed = 230;
         this.jumpSpeed = -440;
@@ -29,24 +63,43 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.wasOnGround = false;
     }
 
-    updateControls(cursors, dashKey, dt, touch = {}) {
-        const moveLeft = cursors.left.isDown || touch.left;
-        const moveRight = cursors.right.isDown || touch.right;
+    updateControls(cursors, dashKey, dt) {
+        const onGround = this.body.blocked.down || this.body.touching.down;
 
-        if (!this.isDashing) {
-            if (moveLeft) {
+        if (this.isDashing) {
+            if (this.hasCustomAnims && (!this.anims.isPlaying || this.anims.currentAnim?.key !== 'voltix_dash')) {
+                this.play('voltix_dash');
+            }
+        } else {
+            if (cursors.left.isDown) {
                 this.setVelocityX(-this.moveSpeed);
                 this.flipX = true;
-            } else if (moveRight) {
+                this.setAngle(-3);
+                if (onGround && this.hasCustomAnims && (!this.anims.isPlaying || this.anims.currentAnim?.key !== 'voltix_run')) {
+                    this.play('voltix_run');
+                }
+            } else if (cursors.right.isDown) {
                 this.setVelocityX(this.moveSpeed);
                 this.flipX = false;
+                this.setAngle(3);
+                if (onGround && this.hasCustomAnims && (!this.anims.isPlaying || this.anims.currentAnim?.key !== 'voltix_run')) {
+                    this.play('voltix_run');
+                }
             } else {
                 this.setVelocityX(0);
+                this.setAngle(0);
+                if (onGround && this.hasCustomAnims && (!this.anims.isPlaying || this.anims.currentAnim?.key !== 'voltix_idle')) {
+                    this.play('voltix_idle');
+                }
+            }
+
+            if (!onGround && this.hasCustomAnims) {
+                this.stop();
+                this.setFrame(this.body.velocity.y < 0 ? 6 : 7);
             }
         }
 
         // Coyote time y detección de aterrizaje
-        const onGround = this.body.blocked.down || this.body.touching.down;
         if (onGround && !this.wasOnGround) {
             this._spawnLandingParticles();
         }
@@ -60,11 +113,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         // Jump buffer
-        const jumpPressed = Phaser.Input.Keyboard.JustDown(cursors.up)
-            || Phaser.Input.Keyboard.JustDown(cursors.space)
-            || touch.jumpJustPressed;
-
-        if (jumpPressed) {
+        if (Phaser.Input.Keyboard.JustDown(cursors.up) || Phaser.Input.Keyboard.JustDown(cursors.space)) {
             this.jumpBufferTime = 110;
         } else {
             this.jumpBufferTime = Math.max(0, this.jumpBufferTime - dt);
@@ -86,8 +135,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             }
         }
 
-        const dashPressed = Phaser.Input.Keyboard.JustDown(dashKey) || touch.dashJustPressed;
-        if (dashPressed && this.canDash) {
+        if (Phaser.Input.Keyboard.JustDown(dashKey) && this.canDash) {
             this.dash();
         }
 
@@ -131,16 +179,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     triggerInvulnerability(duration = 1200) {
         this.isInvulnerable = true;
-        this.scene.tweens.add({
+        const blinkTween = this.scene.tweens.add({
             targets: this,
-            alpha: 0.25,
+            alpha: 0.3,
             duration: 100,
             yoyo: true,
-            repeat: Math.floor(duration / 200),
-            onComplete: () => {
-                this.alpha = 1;
-                this.isInvulnerable = false;
-            }
+            repeat: -1
+        });
+        this.scene.time.delayedCall(duration, () => {
+            blinkTween.stop();
+            this.alpha = 1;
+            this.isInvulnerable = false;
         });
     }
 
@@ -153,8 +202,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    _squashAndStretch(multX, multY) {
+        if (this._squashTween) this._squashTween.stop();
+        this.setScale(this.baseScaleX * multX, this.baseScaleY * multY);
+        this._squashTween = this.scene.tweens.add({
+            targets: this,
+            scaleX: this.baseScaleX,
+            scaleY: this.baseScaleY,
+            duration: 140,
+            ease: 'Back.easeOut'
+        });
+    }
+
     _spawnDoubleJumpParticles() {
-        const particles = this.scene.add.particles(this.x, this.y + 14, 'particle', {
+        const particles = this.scene.add.particles(this.x, this.y + 28, 'particle', {
             speedX: { min: -90, max: 90 },
             speedY: { min: 10, max: 60 },
             scale: { start: 0.7, end: 0 },
@@ -169,7 +230,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     _spawnLandingParticles() {
-        const particles = this.scene.add.particles(this.x, this.y + 16, 'particle', {
+        const particles = this.scene.add.particles(this.x, this.y + 30, 'particle', {
             speedX: { min: -60, max: 60 },
             speedY: { min: -30, max: -5 },
             scale: { start: 0.5, end: 0 },

@@ -28,8 +28,12 @@ export class GameScene extends Phaser.Scene {
         generateGameTextures(this);
 
         const level = LEVELS[this.levelIndex];
-        this.cameras.main.setBackgroundColor('#090d1a');
+        this.cameras.main.setBackgroundColor('#050811');
+        if (this.textures.exists('bg')) {
+            this.add.image(400, 300, 'bg').setDisplaySize(800, 600).setAlpha(0.42);
+        }
         this._drawCyberGrid();
+        this._spawnAmbientSparks();
 
         // Plataformas
         this.platforms = this.physics.add.staticGroup();
@@ -79,7 +83,7 @@ export class GameScene extends Phaser.Scene {
             repeat: -1,
             ease: 'Sine.easeInOut'
         });
-        this.goalLabel = this.add.text(level.goal.x, level.goal.y - 36, 'BLOQUEADO', {
+        this.goalLabel = this.add.text(level.goal.x, level.goal.y - 36, 'SIN VOLTAJE', {
             fontSize: '12px',
             fontFamily: 'monospace',
             fontStyle: 'bold',
@@ -132,9 +136,8 @@ export class GameScene extends Phaser.Scene {
             }
         });
 
-        // HUD y controles táctiles
+        // HUD
         this._createHUD(level);
-        this._createTouchControls();
     }
 
     update(time, delta) {
@@ -144,9 +147,7 @@ export class GameScene extends Phaser.Scene {
         this.elapsedTime += dt / 1000;
         this.timerText.setText(`${this.elapsedTime.toFixed(1)}s`);
 
-        this.player.updateControls(this.cursors, this.dashKey, dt, this.touchState);
-        this.touchState.jumpJustPressed = false;
-        this.touchState.dashJustPressed = false;
+        this.player.updateControls(this.cursors, this.dashKey, dt);
         this.drones.forEach(d => d.update());
         this.sentinels.forEach(s => s.update());
         this.hunters.forEach(h => h.update(this.player));
@@ -158,18 +159,47 @@ export class GameScene extends Phaser.Scene {
 
     _drawCyberGrid() {
         const g = this.add.graphics();
-        g.lineStyle(1, 0x1e293b, 0.35);
+        // Grilla base
+        g.lineStyle(1, 0x1e293b, 0.32);
         for (let x = 0; x <= 800; x += 40) {
             g.lineBetween(x, 0, x, 600);
         }
         for (let y = 0; y <= 600; y += 40) {
             g.lineBetween(0, y, 800, y);
         }
+
+        // Trazas de circuito de alto voltaje en el fondo
+        g.lineStyle(2, 0x0ea5e9, 0.14);
+        g.lineBetween(80, 120, 280, 120);
+        g.lineBetween(280, 120, 320, 160);
+        g.lineBetween(520, 440, 720, 440);
+        g.lineBetween(520, 440, 480, 400);
+
+        g.fillStyle(0xfacc15, 0.22);
+        for (let x = 80; x < 800; x += 120) {
+            for (let y = 80; y < 600; y += 120) {
+                g.fillCircle(x, y, 2.5);
+            }
+        }
+    }
+
+    _spawnAmbientSparks() {
+        this.add.particles(0, 0, 'particle', {
+            x: { min: 20, max: 780 },
+            y: { min: 60, max: 580 },
+            speedY: { min: -25, max: -8 },
+            scale: { start: 0.35, end: 0 },
+            alpha: { start: 0.35, end: 0 },
+            tint: [0xfacc15, 0x00f0ff],
+            lifespan: 3500,
+            frequency: 320
+        });
     }
 
     _createHUD(level) {
-        // Barra superior semitransparente
-        this.add.rectangle(400, 26, 800, 52, 0x070a14, 0.8).setScrollFactor(0);
+        // Barra superior semitransparente con línea de voltaje
+        this.add.rectangle(400, 26, 800, 52, 0x050811, 0.88).setScrollFactor(0);
+        this.add.rectangle(400, 52, 800, 2, 0x00f0ff, 0.45).setScrollFactor(0);
 
         this.add.text(16, 10, level.name, {
             fontSize: '13px',
@@ -178,10 +208,10 @@ export class GameScene extends Phaser.Scene {
             color: '#60a5fa'
         });
 
-        this.scoreText = this.add.text(16, 28, `Energía: 0 / ${level.requiredEnergy}`, {
+        this.scoreText = this.add.text(16, 28, `Voltios: 0 / ${level.requiredEnergy}`, {
             fontSize: '16px',
             fontFamily: 'monospace',
-            color: '#00f0ff'
+            color: '#facc15'
         });
 
         // Barra de Dash
@@ -210,14 +240,16 @@ export class GameScene extends Phaser.Scene {
             fontSize: '13px',
             fontFamily: 'monospace',
             color: '#9ca3af'
-        }).setOrigin(1, 0);
+        }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+        this.muteText.on('pointerdown', () => this._toggleMute());
 
-        // Controles abajo
+        // Controles abajo integrados con el escenario
+        this.add.rectangle(400, 588, 600, 18, 0x0b1222, 0.55).setScrollFactor(0).setDepth(50);
         this.add.text(400, 588, '← → Mover  |  ↑/ESPACIO Saltar  |  SHIFT Dash  |  P Pausa  |  M Sonido', {
             fontSize: '11px',
             fontFamily: 'monospace',
-            color: '#6b7280'
-        }).setOrigin(0.5);
+            color: '#64748b'
+        }).setOrigin(0.5).setAlpha(0.85).setScrollFactor(0).setDepth(51);
     }
 
     _createTouchControls() {
@@ -282,13 +314,13 @@ export class GameScene extends Phaser.Scene {
         this.totalScore += 10;
 
         const level = LEVELS[this.levelIndex];
-        this.scoreText.setText(`Energía: ${this.levelScore} / ${level.requiredEnergy}`);
+        this.scoreText.setText(`Voltios: ${this.levelScore} / ${level.requiredEnergy}`);
         if (this.levelScore >= level.requiredEnergy && !this.goalUnlocked) {
             this.goalUnlocked = true;
             this.scoreText.setColor('#00ff99');
             this.goal.clearTint();
             this.goal.setAlpha(1);
-            this.goalLabel.setText('SALIDA ABIERTA').setColor('#00ff99');
+            this.goalLabel.setText('PORTAL ACTIVO').setColor('#00ff99');
 
             const unlockFx = this.add.particles(this.goal.x, this.goal.y, 'particle', {
                 speed: { min: 50, max: 140 },
@@ -432,14 +464,14 @@ export class GameScene extends Phaser.Scene {
         sfx.gameOver();
 
         this.add.rectangle(400, 300, 800, 600, 0x000000, 0.82);
-        this.add.text(400, 240, 'SISTEMA COMPROMETIDO', {
-            fontSize: '40px',
+        this.add.text(400, 240, 'CORTOCIRCUITO', {
+            fontSize: '44px',
             fontFamily: 'monospace',
             fontStyle: 'bold',
             color: '#ff2a55'
         }).setOrigin(0.5);
 
-        this.add.text(400, 300, `Energía total: ${this.totalScore}  |  Tiempo: ${this.elapsedTime.toFixed(1)}s`, {
+        this.add.text(400, 300, `Voltios totales: ${this.totalScore}  |  Tiempo: ${this.elapsedTime.toFixed(1)}s`, {
             fontSize: '18px',
             fontFamily: 'monospace',
             color: '#e5e7eb'
@@ -473,14 +505,14 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.add.rectangle(400, 300, 800, 600, 0x000000, 0.82);
-        this.add.text(400, 220, '¡SISTEMA ESCAPADO!', {
-            fontSize: '44px',
+        this.add.text(400, 220, '⚡ ¡VOLTIX ESCAPÓ! ⚡', {
+            fontSize: '40px',
             fontFamily: 'monospace',
             fontStyle: 'bold',
-            color: '#00ff99'
+            color: '#facc15'
         }).setOrigin(0.5);
 
-        this.add.text(400, 290, `Energía final: ${this.totalScore}\nTiempo total: ${this.elapsedTime.toFixed(1)}s`, {
+        this.add.text(400, 290, `Voltios finales: ${this.totalScore}\nTiempo total: ${this.elapsedTime.toFixed(1)}s`, {
             fontSize: '20px',
             fontFamily: 'monospace',
             color: '#e5e7eb',

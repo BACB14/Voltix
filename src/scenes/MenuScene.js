@@ -7,57 +7,86 @@ export class MenuScene extends Phaser.Scene {
         super('MenuScene');
     }
 
+    preload() {
+        if (!this.textures.exists('bg')) {
+            this.load.image('bg', './assets/bg.png');
+        }
+        if (!this.textures.exists('player_sprite')) {
+            this.load.spritesheet('player_sprite', './assets/player.png', {
+                frameWidth: 235,
+                frameHeight: 181
+            });
+        }
+    }
+
     create() {
         generateGameTextures(this);
 
         this.cameras.main.setBackgroundColor('#090d1a');
+        if (this.textures.exists('bg')) {
+            this.add.image(400, 300, 'bg').setDisplaySize(800, 600).setAlpha(0.32);
+        }
         this._drawCyberGrid();
         this._spawnAmbientParticles();
         this.selectedLevel = 0;
 
         // Título principal
-        this.add.text(400, 140, 'CYBER DASH', {
-            fontSize: '48px',
+        this.add.text(400, 105, '⚡ VOLTIX ⚡', {
+            fontSize: '54px',
             fontFamily: 'monospace',
             fontStyle: 'bold',
-            color: '#00f0ff',
-            stroke: '#003344',
-            strokeThickness: 6
+            color: '#facc15',
+            stroke: '#00f0ff',
+            strokeThickness: 4
         }).setOrigin(0.5);
 
-        this.add.text(400, 195, `PROTOCOLO DE EVASIÓN // ${LEVELS.length} SECTORES`, {
-            fontSize: '15px',
+        this.add.text(400, 158, `MODO PRUEBA // ${LEVELS.length} SECTORES DE VOLTAJE`, {
+            fontSize: '14px',
             fontFamily: 'monospace',
-            color: '#60a5fa'
+            color: '#00f0ff'
         }).setOrigin(0.5);
+
+        // Preview animado de Voltix en el menú
+        if (this.textures.exists('player_sprite')) {
+            if (!this.anims.exists('voltix_menu_idle')) {
+                this.anims.create({
+                    key: 'voltix_menu_idle',
+                    frames: this.anims.generateFrameNumbers('player_sprite', { start: 0, end: 1 }),
+                    frameRate: 3,
+                    repeat: -1
+                });
+            }
+            const preview = this.add.sprite(400, 212, 'player_sprite', 0).setDisplaySize(68, 52);
+            preview.play('voltix_menu_idle');
+        }
 
         // Récord guardado
         const bestScore = localStorage.getItem('sistema_escapado_best_score') || 0;
         const bestTime = localStorage.getItem('sistema_escapado_best_time');
         const timeStr = bestTime ? `${Number(bestTime).toFixed(1)}s` : '--';
 
-        this.add.text(400, 245, `RÉCORD: ${bestScore} ENERGÍA  |  MEJOR TIEMPO: ${timeStr}`, {
-            fontSize: '14px',
+        this.add.text(400, 260, `RÉCORD: ${bestScore} VOLTIOS  |  MEJOR TIEMPO: ${timeStr}`, {
+            fontSize: '13px',
             fontFamily: 'monospace',
             color: '#00ff99'
         }).setOrigin(0.5);
 
         // Caja de controles
-        const box = this.add.rectangle(400, 355, 500, 130, 0x111827, 0.85);
-        box.setStrokeStyle(1, 0x3b82f6, 0.8);
+        const box = this.add.rectangle(400, 345, 520, 112, 0x0b1222, 0.88);
+        box.setStrokeStyle(1, 0x00f0ff, 0.55);
 
-        this.add.text(400, 315, 'CONTROLES', {
-            fontSize: '16px',
+        this.add.text(400, 308, 'CONTROLES', {
+            fontSize: '15px',
             fontFamily: 'monospace',
-            color: '#93c5fd',
+            color: '#facc15',
             fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        this.add.text(400, 362,
-            '← →  Moverse        ↑ / ESPACIO  Saltar\n' +
+        this.add.text(400, 352,
+            '← →  Moverse        ↑ / ESPACIO  Saltar (x2)\n' +
             'SHIFT  Dash         P / ESC  Pausa         M  Sonido',
             {
-                fontSize: '14px',
+                fontSize: '13px',
                 fontFamily: 'monospace',
                 color: '#e5e7eb',
                 align: 'center',
@@ -168,6 +197,13 @@ export class MenuScene extends Phaser.Scene {
         }
         for (let y = 0; y <= 600; y += 40) {
             g.lineBetween(0, y, 800, y);
+        }
+        // Nodos de circuito eléctrico
+        g.fillStyle(0xfacc15, 0.25);
+        for (let x = 80; x < 800; x += 120) {
+            for (let y = 80; y < 600; y += 120) {
+                g.fillCircle(x, y, 2.5);
+            }
         }
     }
 }

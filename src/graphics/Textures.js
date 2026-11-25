@@ -7,73 +7,94 @@ export function generateGameTextures(scene) {
 
     const g = scene.make.graphics({ x: 0, y: 0, add: false });
 
-    // 1. Player (28x36) - Runner cyber con visor cian
+    // 1. Player (32x40) - Unidad Voltix con antena, visor cian y núcleo de alto voltaje
     g.clear();
-    g.fillStyle(0x16213e, 1);
-    g.fillRoundedRect(2, 4, 24, 30, 6);
+    // Antena superior
+    g.fillStyle(0xfacc15, 1);
+    g.fillRect(15, 0, 2, 5);
+    g.fillCircle(16, 2, 2);
+    // Cuerpo / traje
+    g.fillStyle(0x0f172a, 1);
+    g.fillRoundedRect(4, 5, 24, 28, 6);
     g.lineStyle(2, 0x00f0ff, 1);
-    g.strokeRoundedRect(2, 4, 24, 30, 6);
+    g.strokeRoundedRect(4, 5, 24, 28, 6);
     // Visor
     g.fillStyle(0x00f0ff, 1);
-    g.fillRoundedRect(12, 10, 12, 7, 3);
-    // Núcleo en el pecho
-    g.fillStyle(0x00ff99, 1);
-    g.fillCircle(14, 24, 3);
-    g.generateTexture('player', 28, 36);
+    g.fillRoundedRect(13, 10, 13, 7, 3);
+    // Núcleo de alto voltaje en el pecho
+    g.fillStyle(0xfacc15, 1);
+    g.fillCircle(16, 24, 4);
+    g.fillStyle(0xffffff, 1);
+    g.fillCircle(16, 24, 1.5);
+    // Botas propulsoras
+    g.fillStyle(0x3b82f6, 1);
+    g.fillRect(7, 33, 7, 6);
+    g.fillRect(18, 33, 7, 6);
+    g.generateTexture('player', 32, 40);
 
-    // 2. Ground / Platform (128x24) - Plataforma metálica con borde neón
+    // 2. Ground / Platform (128x24) - Placa de circuito con trazas de voltaje
     g.clear();
-    g.fillStyle(0x141b2d, 1);
+    g.fillStyle(0x0b1222, 1);
     g.fillRoundedRect(0, 0, 128, 24, 4);
-    g.fillStyle(0x1f2d4d, 1);
+    g.fillStyle(0x13203b, 1);
     g.fillRect(4, 4, 120, 16);
-    g.lineStyle(2, 0x3b82f6, 1);
+    g.lineStyle(2, 0x00f0ff, 0.9);
     g.strokeRoundedRect(1, 1, 126, 22, 4);
-    // Línea superior brillante
-    g.fillStyle(0x60a5fa, 1);
+    // Trazas de circuito y nodos
+    g.fillStyle(0xfacc15, 0.9);
     g.fillRect(4, 1, 120, 2);
+    g.fillCircle(14, 12, 2);
+    g.fillCircle(64, 12, 2);
+    g.fillCircle(114, 12, 2);
     g.generateTexture('ground', 128, 24);
 
-    // 3. Battery (20x24) - Célula de energía brillante
+    // 3. Battery / Volt Cell (20x24) - Célula de alto voltaje amarilla/cian
     g.clear();
-    g.fillStyle(0x00f0ff, 0.25);
+    g.fillStyle(0xfacc15, 0.25);
     g.fillCircle(10, 13, 10);
-    g.fillStyle(0x0f172a, 1);
+    g.fillStyle(0x090d1a, 1);
     g.fillRoundedRect(4, 4, 12, 18, 3);
-    g.lineStyle(2, 0x00f0ff, 1);
+    g.lineStyle(2, 0xfacc15, 1);
     g.strokeRoundedRect(4, 4, 12, 18, 3);
-    g.fillStyle(0x00ff99, 1);
+    g.fillStyle(0x00f0ff, 1);
     g.fillRect(7, 8, 6, 10);
     // Borne superior
-    g.fillStyle(0x00f0ff, 1);
+    g.fillStyle(0xfacc15, 1);
     g.fillRect(7, 1, 6, 3);
     g.generateTexture('battery', 20, 24);
 
-    // 4. Spike (28x22) - Pincho láser rojo
+    // 4. Spike (28x24) - Pilon de arco eléctrico / pincho Tesla
     g.clear();
+    // Base metálica
+    g.fillStyle(0x1e293b, 1);
+    g.fillRoundedRect(3, 18, 22, 6, 2);
+    g.lineStyle(1, 0x64748b, 1);
+    g.strokeRoundedRect(3, 18, 22, 6, 2);
+    // Halo de plasma rojo
     g.fillStyle(0xff2a55, 0.3);
-    g.fillTriangle(14, 0, 0, 22, 28, 22);
+    g.fillTriangle(14, 0, 2, 19, 26, 19);
+    // Aguja de energía
     g.fillStyle(0xff2a55, 1);
-    g.fillTriangle(14, 3, 3, 21, 25, 21);
-    g.fillStyle(0xff99aa, 1);
-    g.fillTriangle(14, 7, 10, 20, 18, 20);
-    g.generateTexture('spike', 28, 22);
+    g.fillTriangle(14, 2, 6, 18, 22, 18);
+    g.fillStyle(0xffcce0, 1);
+    g.fillTriangle(14, 6, 11, 18, 17, 18);
+    g.generateTexture('spike', 28, 24);
 
-    // 5. Drone (34x26) - Dron patrullero con ojo rojo
+    // 5. Drone (34x26) - Dron de seguridad con escáner y propulsores
     g.clear();
-    g.fillStyle(0x2a1228, 1);
-    g.fillRoundedRect(2, 4, 30, 18, 8);
+    g.fillStyle(0x18182b, 1);
+    g.fillRoundedRect(3, 4, 28, 16, 6);
     g.lineStyle(2, 0xff2a55, 1);
-    g.strokeRoundedRect(2, 4, 30, 18, 8);
-    // Ojo central
+    g.strokeRoundedRect(3, 4, 28, 16, 6);
+    // Ojo escáner
     g.fillStyle(0xff2a55, 1);
-    g.fillCircle(20, 13, 5);
+    g.fillCircle(20, 12, 4.5);
     g.fillStyle(0xffffff, 1);
-    g.fillCircle(21, 12, 2);
-    // Propulsores inferiores
-    g.fillStyle(0xff7700, 1);
-    g.fillRect(7, 22, 6, 3);
-    g.fillRect(21, 22, 6, 3);
+    g.fillCircle(21, 11, 1.5);
+    // Propulsores de plasma
+    g.fillStyle(0xfacc15, 1);
+    g.fillRect(7, 20, 6, 4);
+    g.fillRect(21, 20, 6, 4);
     g.generateTexture('drone', 34, 26);
 
     // 6. Goal Portal (36x48) - Portal de salida verde neón
