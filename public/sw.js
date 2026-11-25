@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sistema-escapado-v1';
+const CACHE_NAME = 'cyber-dash-v2';
 const ASSETS = [
     './',
     './index.html',
@@ -24,11 +24,30 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
+
+    const url = new URL(event.request.url);
+    if (url.origin !== self.location.origin) return;
+
+    // Network-first para HTML/navegación (evita referencias a hashes viejos tras un deploy)
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    const copy = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+                    return response;
+                })
+                .catch(() => caches.match('./index.html'))
+        );
+        return;
+    }
+
+    // Cache-first con fallback a red para assets
     event.respondWith(
         caches.match(event.request).then((cached) => {
             if (cached) return cached;
             return fetch(event.request).then((response) => {
-                if (response && response.status === 200 && response.type === 'basic') {
+                if (response && response.status === 200) {
                     const copy = response.clone();
                     caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
                 }
