@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#090d1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+    <link rel="apple-touch-icon" href="./icon.svg">
+    <title>Cyber Dash</title>
+    <style>*{box-sizing:border-box;margin:0;padding:0}html,body{touch-action:none;-webkit-user-select:none;user-select:none;background:#070710;width:100%;height:100%;font-family:Courier New,monospace;overflow:hidden}canvas{border:1px solid #1f2a44;display:block;box-shadow:0 0 30px #00f0ff1f}</style>
+  <script type="module" crossorigin src="./assets/index-BjR4lKX0.js"></script>
+</head>
+<body>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>
